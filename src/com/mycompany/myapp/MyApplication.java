@@ -2,19 +2,18 @@ package com.mycompany.myapp;
 
 
 import com.codename1.ui.Command;
-
 import com.codename1.ui.Dialog;
-
 import com.codename1.ui.Display;
 import com.codename1.ui.Form;
 import com.codename1.ui.SideMenuBar;
+import com.codename1.ui.Toolbar;
+import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.layouts.FlowLayout;
-
 import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.util.Resources;
-
-import com.codename1.ui.Toolbar;
 import com.mycompany.myapp.gui.MainScreen;
+import com.mycompany.myapp.gui.SetUpScreen;
+import com.mycompany.myapp.timers.SimpleDefaultTimer;
 
 
 /**
@@ -25,7 +24,8 @@ public class MyApplication {
 
     private Form current;
     private Resources theme;
-
+    private Game game;
+    
     public void init(Object context) {
         theme = UIManager.initFirstTheme("/theme");
 
@@ -46,9 +46,35 @@ public class MyApplication {
         UIManager.getInstance().getLookAndFeel().setMenuBarClass(SideMenuBar.class);
         Display.getInstance().setCommandBehavior(Display.COMMAND_BEHAVIOR_SIDE_NAVIGATION);
         hi.add(new MainScreen());
-        hi.addCommand(new Command("New Game"));
-        hi.addCommand(new Command("Stop Game"));
-        hi.addCommand(new Command("Exit"));
+        hi.addCommand(new Command("New Game"){
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if(game!=null){
+                    game.stop();
+                }
+                SimpleDefaultTimer t = new SimpleDefaultTimer();
+                game = new Game(t);
+                t.setGame(game);
+                hi.removeAll();
+                hi.add(new SetUpScreen(game));
+                hi.revalidate();
+            }           
+        });
+        hi.addCommand(new Command("Stop Game"){
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if(game!=null){
+                    game.stop();
+                }
+            }         
+        });
+        hi.addCommand(new Command("Exit"){
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                Display.getInstance().exitApplication();
+            }
+            
+        });
         hi.show();
     }
 
