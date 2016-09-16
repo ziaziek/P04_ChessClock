@@ -16,6 +16,9 @@ import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.layouts.BorderLayout;
 import com.codename1.ui.table.TableLayout;
 import com.mycompany.myapp.Game;
+import com.mycompany.myapp.events.IGameSavedListener;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -24,6 +27,15 @@ import com.mycompany.myapp.Game;
 public class SetUpScreen extends Form {
    
    private Game game;
+   private Set<IGameSavedListener> listeners = new HashSet<>();
+
+    public Set<IGameSavedListener> getListeners() {
+        return listeners;
+    }
+
+    public void setListeners(Set<IGameSavedListener> listeners) {
+        this.listeners = listeners;
+    }
    
    /*
     Graphical data holders
@@ -45,6 +57,9 @@ public class SetUpScreen extends Form {
        Button bOK = new Button("OK");
        bOK.addActionListener((ActionListener) (ActionEvent evt) -> {
            saveGame();
+           for(IGameSavedListener gl: listeners){
+               gl.gameSaved(game);
+           }
        });
        add(BorderLayout.SOUTH,bOK);
    }
@@ -54,16 +69,20 @@ public class SetUpScreen extends Form {
         //Container settingsContainer = new Container(new GridLayout(3,1));
         Container timeSettingContainer = new Container(new TableLayout(6, 4));
         Container movesHelper = new Container(new BorderLayout(BorderLayout.CENTER_BEHAVIOR_CENTER));
-        time_h = new TextField();
+        time_h = new TextField("0");
         time_h.setColumns(1);
-        time_min = new TextField();
+        time_min = new TextField("0");
         time_min.setColumns(2);
-        time_s = new TextField();
+        time_s = new TextField("0");
         time_s.setColumns(2);
         add_min=new TextField(1);
+        add_min.setText("0");
         add_s= new TextField(2);
+        add_s.setText("0");
         moves= new TextField(2);
+        moves.setText("0");
         per_min = new TextField(2);
+        per_min.setText("0");
         //row 1
         timeSettingContainer.add(new Label(""));
         timeSettingContainer.add(new Label("h"));
@@ -96,6 +115,11 @@ public class SetUpScreen extends Form {
     }
 
     private void saveGame() {
-        
+        long t0 = 1000* (Integer.parseInt(time_h.getText())*3600+Integer.parseInt(time_min.getText())*60+Integer.parseInt(time_s.getText()));
+        int add = 1000*(Integer.parseInt(add_min.getText())*60+Integer.parseInt(add_s.getText()));
+        game.setTimeForGame(t0,add);
+        game.getPace().setMoves(Integer.parseInt(moves.getText()));
+        game.getPace().setPer_time(Long.parseLong(per_min.getText()));
+        game.setAdded(Integer.parseInt(add_min.getText())*60+Integer.parseInt(add_s.getText()));
     }
 }

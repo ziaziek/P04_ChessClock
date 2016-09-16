@@ -16,6 +16,28 @@ public class Game {
 
     final Runnable tc; //procedure that the timer will run
     int x = 0, added = 0, semiMovesCounter = 0, movesCounter = 1;
+
+    public int getAdded() {
+        return added;
+    }
+
+    public void setAdded(int added) {
+        this.added = added;
+    }
+
+    private PaceSettings pace = new PaceSettings();
+
+    public PaceSettings getPace() {
+        return pace;
+    }
+
+    public void setPace(PaceSettings pace) {
+        this.pace = pace;
+    }
+    
+    public int getMovesCounter() {
+        return movesCounter;
+    }
     long interval = 1000;
     final Timer timer;
     long[] ptime = new long[2]; //array of players' remaining times
