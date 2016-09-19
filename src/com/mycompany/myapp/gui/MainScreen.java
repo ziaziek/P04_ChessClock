@@ -8,24 +8,44 @@ package com.mycompany.myapp.gui;
 import com.codename1.ui.Button;
 import com.codename1.ui.Container;
 import com.codename1.ui.Label;
+import com.codename1.ui.events.ActionEvent;
+import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.layouts.LayeredLayout;
 import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.table.TableLayout;
 import com.mycompany.myapp.Game;
+import com.mycompany.myapp.events.IPlayerChangedListener;
+import com.mycompany.myapp.events.ITimerUpdateEventListener;
+import com.mycompany.myapp.timers.SimpleDefaultTimer;
 import com.mycompany.myapp.timers.TimeHelper;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Timer;
+
 
 /**
  *
  * @author Przemo
  */
-public class MainScreen extends Container {
+
+public class MainScreen extends Container implements ITimerUpdateEventListener, ActionListener<ActionEvent>{
+    
+    private final Set<IPlayerChangedListener> playerChangedListeners = new HashSet<>();
+    private SimpleDefaultTimer timer = new SimpleDefaultTimer();
+    private Timer time;
+    
+    public Set<IPlayerChangedListener> getPlayerChangedListeners() {
+        return playerChangedListeners;
+    }
 
     private Label whiteTime, blackTime;
     private Label moves;
     private final Game game;
 
-    public MainScreen(final Game game) {
+    public MainScreen(final Game game, final SimpleDefaultTimer timer) {
         this.game = game;
+        this.timer=timer;
+        timer.getGameListeners().add(this);
         buildScreen();
 
     }
@@ -48,11 +68,45 @@ public class MainScreen extends Container {
             add(c);
 
             Button vb = new Button("");
+            vb.addActionListener(this);
             vb.setUnselectedStyle(UIManager.getInstance().getComponentStyle("ibutton"));
             add(vb);
         }
 
     }
+
+
+    public void stopGame(){
+        game.stop();
+        time.cancel();
+    }
     
-    
+    @Override
+    public void update(int interv) {
+       game.addTimeForPlayer(game.getX(), interv);
+       whiteTime.setText(TimeHelper.milisToTime(game.getPlayerTime(0)));
+       blackTime.setText(TimeHelper.milisToTime(game.getPlayerTime(1)));
+       moves.setText(String.valueOf(game.getMovesCounter()));
+       whiteTime.repaint();
+       blackTime.repaint();
+       moves.repaint();
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent evt) {
+        if(!game.isRunning()){
+            game.start();
+            try{
+               time=new Timer();
+               time.schedule(timer, 0, timer.getInterval()); 
+            } catch(Exception ex){
+                System.out.println(ex.getMessage());
+            }
+        }
+        if(evt.getSource().getClass()==Button.class)
+            for(IPlayerChangedListener pl : playerChangedListeners){
+                pl.onPlayerChanged(null);
+            }
+    }
+
 }

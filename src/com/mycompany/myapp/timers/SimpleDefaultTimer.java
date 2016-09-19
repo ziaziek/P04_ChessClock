@@ -5,27 +5,37 @@
  */
 package com.mycompany.myapp.timers;
 
-import com.mycompany.myapp.Game;
+import com.mycompany.myapp.events.ITimerUpdateEventListener;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TimerTask;
 
 /**
  *
  * @author Przemo
  */
-public class SimpleDefaultTimer implements Runnable{
+public class SimpleDefaultTimer extends TimerTask{
 
-    private Game game;
+    private int interval=1000;
 
-    public Game getGame() {
-        return game;
+    public int getInterval() {
+        return interval;
     }
 
-    public void setGame(Game game) {
-        this.game = game;
+    public void setInterval(int interval) {
+        this.interval = interval;
+    }
+    private final Set<ITimerUpdateEventListener> gameListeners = new HashSet<>();
+
+    public Set<ITimerUpdateEventListener> getGameListeners() {
+        return gameListeners;
     }
     
     @Override
     public void run() {
-        game.addTimeForPlayer(game.getX(), -game.getInterval());
+        for(ITimerUpdateEventListener gl: gameListeners){
+            gl.update(-interval);
+        }
     }
     
 }

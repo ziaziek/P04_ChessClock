@@ -5,17 +5,13 @@
  */
 package com.mycompany.myapp;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 /**
  *
  * @author Przemo
  */
 public class Game {
 
-    final Runnable tc; //procedure that the timer will run
-    int x = 0, added = 0, semiMovesCounter = 0, movesCounter = 1;
+    int x = -1, added = 0, semiMovesCounter = 0, movesCounter = 1;
 
     public int getAdded() {
         return added;
@@ -38,71 +34,75 @@ public class Game {
     public int getMovesCounter() {
         return movesCounter;
     }
-    long interval = 1000;
-    final Timer timer;
-    long[] ptime = new long[2]; //array of players' remaining times
 
-    public long getInterval() {
-        return interval;
+    long[] ptime = new long[2]; //array of players' remaining times
+    private boolean running;
+    private boolean paused;
+
+    public boolean isPaused() {
+        return paused;
+    }
+
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+    }
+
+    public boolean isRunning() {
+        return running;
     }
 
     public int getX() {
         return x;
     }
 
-    public Game(Runnable timerCounter) {
-        this.tc = timerCounter;
-        this.timer = new Timer();
-    }
-
-    public Game(Runnable timerCounter, long timerPeriod) {
-        this(timerCounter);
-        interval = timerPeriod;
+    public Game() {
+        
     }
 
     public void addTimeForPlayer(int x, long time) {
-        ptime[x] += time;
+        
+        if(ptime[x]<=0){
+            ptime[x]=0;
+        } else {
+           ptime[x] += time; 
+        }
     }
 
-    public long getPlayerTime(int x){
+    public long getPlayerTime(int x) {
         return ptime[x];
     }
-    
+
     public void setTimeForGame(long totaalTime, int added) {
         for (int i = 0; i < ptime.length; i++) {
-            ptime[i] = totaalTime;
-            this.added = added;
+            ptime[i] = totaalTime;  
         }
+        this.added = added;
     }
 
     public void onPush() {
-        ptime[x] += added;
-        x = (x + 1) % 2;
-        semiMovesCounter++;
-        movesCounter = semiMovesCounter % 2;
+        if (running) {
+            x = (x + 1) % 2;
+            ptime[x] += added;
+            semiMovesCounter++;
+            movesCounter = Math.max(1, (semiMovesCounter+1) / 2);
+        } else {
+            start();
+        }
     }
 
     public void start() {
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                tc.run();
-                updateUI();
-            }
-        }, 0, interval);
+        paused=false;
+        running = true;
     }
 
     public void stop() {
-        if (timer != null) {
-            timer.cancel();
-        }
+        running = false;
+        paused=false;
     }
-
-    private void updateUI() {
-        //TODO:Implement properly when building GUI
-        for (int i = 0; i < ptime.length; i++) {
-            System.out.println("Player " + i + " time:" + ptime[i]);
-            System.out.println("Moves: " + movesCounter);
-        }
+    
+    public void pause(){
+        running=true;
+        paused=true;
     }
+    
 }

@@ -26,7 +26,7 @@ import java.util.Set;
  */
 public class SetUpScreen extends Form {
    
-   private Game game;
+   private final Game game;
    private Set<IGameSavedListener> listeners = new HashSet<>();
 
     public Set<IGameSavedListener> getListeners() {
@@ -120,6 +120,5 @@ public class SetUpScreen extends Form {
         game.setTimeForGame(t0,add);
         game.getPace().setMoves(Integer.parseInt(moves.getText()));
         game.getPace().setPer_time(Long.parseLong(per_min.getText()));
-        game.setAdded(Integer.parseInt(add_min.getText())*60+Integer.parseInt(add_s.getText()));
     }
 }
