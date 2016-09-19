@@ -6,6 +6,9 @@
 package com.mycompany.myapp.timers;
 
 import com.mycompany.myapp.Game;
+import com.mycompany.myapp.events.IGameChangedStateEventListener;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -14,7 +17,11 @@ import com.mycompany.myapp.Game;
 public class SimpleDefaultTimer implements Runnable{
 
     private Game game;
+    private final Set<IGameChangedStateEventListener> gameListeners = new HashSet<>();
 
+    public Set<IGameChangedStateEventListener> getGameListeners() {
+        return gameListeners;
+    }
     public Game getGame() {
         return game;
     }
@@ -26,6 +33,9 @@ public class SimpleDefaultTimer implements Runnable{
     @Override
     public void run() {
         game.addTimeForPlayer(game.getX(), -game.getInterval());
+        for(IGameChangedStateEventListener gl: gameListeners){
+            gl.update(game);
+        }
     }
     
 }

@@ -19,6 +19,11 @@ public class Game {
     long interval = 1000;
     final Timer timer;
     long[] ptime = new long[2]; //array of players' remaining times
+    private boolean running;
+
+    public boolean isRunning() {
+        return running;
+    }
 
     public long getInterval() {
         return interval;
@@ -42,10 +47,10 @@ public class Game {
         ptime[x] += time;
     }
 
-    public long getPlayerTime(int x){
+    public long getPlayerTime(int x) {
         return ptime[x];
     }
-    
+
     public void setTimeForGame(long totaalTime, int added) {
         for (int i = 0; i < ptime.length; i++) {
             ptime[i] = totaalTime;
@@ -54,33 +59,31 @@ public class Game {
     }
 
     public void onPush() {
-        ptime[x] += added;
-        x = (x + 1) % 2;
-        semiMovesCounter++;
-        movesCounter = semiMovesCounter % 2;
+        if (running) {
+            ptime[x] += added;
+            x = (x + 1) % 2;
+            semiMovesCounter++;
+            movesCounter = semiMovesCounter % 2;
+        } else {
+            start();
+            running=true;
+        }
     }
 
-    public void start() {
+    protected void start() {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 tc.run();
-                updateUI();
             }
         }, 0, interval);
+        running = true;
     }
 
     public void stop() {
+        running = false;
         if (timer != null) {
             timer.cancel();
-        }
-    }
-
-    private void updateUI() {
-        //TODO:Implement properly when building GUI
-        for (int i = 0; i < ptime.length; i++) {
-            System.out.println("Player " + i + " time:" + ptime[i]);
-            System.out.println("Moves: " + movesCounter);
         }
     }
 }
