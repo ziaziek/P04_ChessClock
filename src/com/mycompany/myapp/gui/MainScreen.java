@@ -9,6 +9,7 @@ import com.codename1.media.Media;
 import com.codename1.media.MediaManager;
 import com.codename1.ui.Button;
 import com.codename1.ui.Container;
+import com.codename1.ui.Display;
 import com.codename1.ui.Label;
 import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.events.ActionListener;
@@ -49,7 +50,8 @@ public class MainScreen extends Container implements ITimerUpdateEventListener, 
         this.timer=timer;
         timer.getGameListeners().add(this);
         buildScreen();
-
+        Display.getInstance().setBuiltinSoundsEnabled(true);
+        Display.getInstance().setScreenSaverEnabled(true);
     }
 
     private void buildScreen() {
