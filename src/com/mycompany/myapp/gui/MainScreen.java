@@ -5,6 +5,8 @@
  */
 package com.mycompany.myapp.gui;
 
+import com.codename1.media.Media;
+import com.codename1.media.MediaManager;
 import com.codename1.ui.Button;
 import com.codename1.ui.Container;
 import com.codename1.ui.Label;
@@ -18,6 +20,7 @@ import com.mycompany.myapp.events.IPlayerChangedListener;
 import com.mycompany.myapp.events.ITimerUpdateEventListener;
 import com.mycompany.myapp.timers.SimpleDefaultTimer;
 import com.mycompany.myapp.timers.TimeHelper;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Timer;
@@ -33,7 +36,6 @@ public class MainScreen extends Container implements ITimerUpdateEventListener, 
     private final Set<IPlayerChangedListener> playerChangedListeners = new HashSet<>();
     private SimpleDefaultTimer timer = new SimpleDefaultTimer();
     private Timer time;
-    
     public Set<IPlayerChangedListener> getPlayerChangedListeners() {
         return playerChangedListeners;
     }
@@ -107,6 +109,20 @@ public class MainScreen extends Container implements ITimerUpdateEventListener, 
             for(IPlayerChangedListener pl : playerChangedListeners){
                 pl.onPlayerChanged(null);
             }
+        new Thread(){
+            @Override
+            public void run() {
+                final Media tapSound;
+                try {
+                    tapSound = MediaManager.createMedia("C:/Users/Przemo/.cn1/Pat1.wav", false);
+                    tapSound.play();
+                } catch (IOException ex) {
+                    System.out.println(ex.getMessage());
+                }
+                
+            }
+            
+        }.start();
     }
 
 }
