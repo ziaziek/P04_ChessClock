@@ -114,7 +114,7 @@ public class MainScreen extends Container implements ITimerUpdateEventListener, 
             public void run() {
                 final Media tapSound;
                 try {
-                    tapSound = MediaManager.createMedia("C:/Users/Przemo/.cn1/Pat1.wav", false);
+                    tapSound = MediaManager.createMedia(com.codename1.ui.util.Resources.getGlobalResources().getData("Pat1.wav"), "audio/wav");
                     tapSound.play();
                 } catch (IOException ex) {
                     System.out.println(ex.getMessage());
