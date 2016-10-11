@@ -12,7 +12,24 @@ package com.mycompany.myapp;
 public class Game {
 
     int x = -1, added = 0, semiMovesCounter = 0, movesCounter = 1;
+    String gameToken, playerToken;
 
+    public String getGameToken() {
+        return gameToken;
+    }
+
+    public void setGameToken(String gameToken) {
+        this.gameToken = gameToken;
+    }
+
+    public String getPlayerToken() {
+        return playerToken;
+    }
+
+    public void setPlayerToken(String playerToken) {
+        this.playerToken = playerToken;
+    }
+    
     public int getAdded() {
         return added;
     }

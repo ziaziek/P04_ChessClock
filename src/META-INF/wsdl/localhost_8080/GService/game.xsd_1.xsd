@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8'?><!-- Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is JAX-WS RI 2.2-hudson-740-. --><xs:schema xmlns:tns="http://services/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://services/">
+
+<xs:element name="join" type="tns:join" />
+
+<xs:element name="joinResponse" type="tns:joinResponse" />
+
+<xs:element name="next" type="tns:next" />
+
+<xs:element name="nextResponse" type="tns:nextResponse" />
+
+<xs:element name="save" type="tns:save" />
+
+<xs:element name="saveResponse" type="tns:saveResponse" />
+
+<xs:element name="status" type="tns:status" />
+
+<xs:element name="statusResponse" type="tns:statusResponse" />
+
+<xs:element name="statuses" type="tns:statuses" />
+
+<xs:element name="statusesResponse" type="tns:statusesResponse" />
+
+<xs:complexType name="next">
+<xs:sequence>
+<xs:element name="pkey" type="xs:string" minOccurs="0" />
+<xs:element name="gkey" type="xs:string" minOccurs="0" />
+<xs:element name="ptime" type="xs:long" />
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="nextResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:long" />
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="join">
+<xs:sequence>
+<xs:element name="gkey" type="xs:string" minOccurs="0" />
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="joinResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:string" minOccurs="0" />
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="save">
+<xs:sequence>
+<xs:element name="time" type="xs:long" />
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="saveResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="statuses">
+<xs:sequence />
+</xs:complexType>
+
+<xs:complexType name="statusesResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="status">
+<xs:sequence>
+<xs:element name="gkey" type="xs:string" minOccurs="0" />
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="statusResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:anyType" minOccurs="0" />
+</xs:sequence>
+</xs:complexType>
+</xs:schema>
