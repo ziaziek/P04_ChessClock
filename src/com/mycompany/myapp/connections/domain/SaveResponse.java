@@ -6,10 +6,6 @@
 package com.mycompany.myapp.connections.domain;
 
 import com.codename1.xml.Element;
-import com.codename1.xml.XMLParser;
-import java.io.ByteArrayInputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +13,7 @@ import java.util.List;
  *
  * @author Przemo
  */
-public class SaveResponse {
+public class SaveResponse extends AbstractResponse<List<String>> {
 
     private List<String> tokens = new ArrayList<>();
 
@@ -25,24 +21,17 @@ public class SaveResponse {
         return tokens;
     }
 
-    public SaveResponse(String resp) {
-        XMLParser parser = new XMLParser();
-        try {
-            Element e = parser.parse(new InputStreamReader(new ByteArrayInputStream(resp.getBytes("UTF-8"))));
-            Element el = e.getChildAt(0).getChildAt(0);
-            tokens = el.getChildrenByTagName("return");
-        } catch (UnsupportedEncodingException ex) {
-
-        }
-
+    @Override
+    public List<String> getResult() {
+        return tokens;
     }
 
-    public SaveResponse(Element resp) {
-        Element el = resp.getChildAt(0).getChildAt(0);
+    @Override
+    public void extractResultsFromBody(Element element) {
+        Element el = element.getChildAt(0).getChildAt(0);
             List<Element> v = el.getChildrenByTagName("return");
-            for (Element element : v) {
-                tokens.add(element.getChildAt(0).getText());
+            for (Element element1 : v) {
+                tokens.add(element1.getChildAt(0).getText());
             }
-
     }
 }

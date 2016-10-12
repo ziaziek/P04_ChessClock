@@ -14,6 +14,7 @@ import com.codename1.ui.util.Resources;
 import com.mycompany.myapp.events.IGameSavedListener;
 import com.mycompany.myapp.events.IPlayerChangedListener;
 import com.mycompany.myapp.events.PlayerChangedEvent;
+import com.mycompany.myapp.gui.JoinGameScreen;
 import com.mycompany.myapp.gui.MainScreen;
 import com.mycompany.myapp.gui.SetUpScreen;
 import com.mycompany.myapp.timers.SimpleDefaultTimer;
@@ -66,6 +67,21 @@ public class MyApplication implements IGameSavedListener, IPlayerChangedListener
                 hi.add(sc);
                 hi.revalidate();
             }           
+        });
+        hi.addCommand(new Command("Join Game"){
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if(game!=null){
+                    game.stop();
+                }               
+                game = new Game();
+                hi.removeAll();
+                JoinGameScreen jsc = new JoinGameScreen(game);
+                jsc.getListeners().add(MyApplication.this);
+                hi.add(jsc);
+                hi.revalidate();
+            }
+            
         });
         hi.addCommand(new Command("Stop Game"){
             @Override

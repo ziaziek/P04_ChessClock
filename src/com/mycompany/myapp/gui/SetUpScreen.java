@@ -5,13 +5,10 @@
  */
 package com.mycompany.myapp.gui;
 
-import com.codename1.components.InfiniteProgress;
-import com.codename1.io.NetworkManager;
 import com.codename1.ui.Button;
 import com.codename1.ui.Component;
 import com.codename1.ui.Container;
 import com.codename1.ui.Dialog;
-import com.codename1.ui.Form;
 import com.codename1.ui.Label;
 import com.codename1.ui.TextField;
 import com.codename1.ui.events.ActionEvent;
@@ -19,19 +16,20 @@ import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.layouts.BorderLayout;
 import com.codename1.ui.table.TableLayout;
 import com.mycompany.myapp.Game;
-import com.mycompany.myapp.connections.WebServiceConnection;
+import com.mycompany.myapp.connections.domain.AbstractResponse;
 import com.mycompany.myapp.connections.domain.SaveRequest;
 import com.mycompany.myapp.connections.domain.SaveResponse;
 import com.mycompany.myapp.events.IGameSavedListener;
 import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
  *
  * @author Przemo
  */
-public class SetUpScreen extends Form {
+public final class SetUpScreen extends ChessClockForm {
 
     private final Game game;
     private Set<IGameSavedListener> listeners = new HashSet<>();
@@ -55,19 +53,25 @@ public class SetUpScreen extends Form {
 
     public SetUpScreen(final Game g) {
         this.game = g;
-        init();
+        initForm();
     }
 
-    private void init() {
+    @Override
+    protected void initForm() {
         this.setLayout(new BorderLayout(BorderLayout.CENTER_BEHAVIOR_CENTER_ABSOLUTE));
         add(BorderLayout.NORTH, new Label("Setting up new game"));
         add(BorderLayout.CENTER, getMainSetUpPanel());
         Button bOK = new Button("OK");
         bOK.addActionListener((ActionListener) (ActionEvent evt) -> {
-            saveGame();
-            for (IGameSavedListener gl : listeners) {
+            try {
+                saveGame();
+                for (IGameSavedListener gl : listeners) {
                 gl.gameSaved(game);
             }
+            } catch (Exception ex) {
+                Dialog.show("Save error", ex.getMessage(), "OK", "Cancel");
+            }
+            
         });
         add(BorderLayout.SOUTH, bOK);
     }
@@ -122,28 +126,23 @@ public class SetUpScreen extends Form {
         return timeSettingContainer;
     }
 
-    private void saveGame() {
-        long t0 = 1000 * (Integer.parseInt(time_h.getText()) * 3600 + Integer.parseInt(time_min.getText()) * 60 + Integer.parseInt(time_s.getText()));
-        int add = 1000 * (Integer.parseInt(add_min.getText()) * 60 + Integer.parseInt(add_s.getText()));
-        game.setTimeForGame(t0, add);
-        game.getPace().setMoves(Integer.parseInt(moves.getText()));
-        game.getPace().setPer_time(Long.parseLong(per_min.getText()));
-        InfiniteProgress prog = new InfiniteProgress();
-        Dialog dlg = prog.showInifiniteBlocking();
-        WebServiceConnection con;
+    private void saveGame() throws Exception {
         try {
-            SaveRequest sreq = new SaveRequest(t0);
-            con = new WebServiceConnection(sreq.getRequest());
-            con.getConnectionRequest().setDisposeOnCompletion(dlg);
-            NetworkManager.getInstance().addToQueueAndWait(con.getConnectionRequest());
-            System.out.println(con.getResponseBody());
-            SaveResponse resp = new SaveResponse(con.getResponseBody());
-            game.setGameToken(resp.getTokens().get(0));
-            game.setPlayerToken(resp.getTokens().get(1));
+            long t0 = 1000 * (Integer.parseInt(time_h.getText()) * 3600 + Integer.parseInt(time_min.getText()) * 60 + Integer.parseInt(time_s.getText()));
+            int add = 1000 * (Integer.parseInt(add_min.getText()) * 60 + Integer.parseInt(add_s.getText()));
+            game.setTimeForGame(t0, add);
+            game.getPace().setMoves(Integer.parseInt(moves.getText()));
+            game.getPace().setPer_time(Long.parseLong(per_min.getText()));
+            makeConnectionWithGameUpdate(new SaveRequest(t0), game, new SaveResponse());            
         } catch (UnsupportedEncodingException ex) {
-
+            //Logger.getLogger(SetUpScreen.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
 
+    @Override
+    protected void updateGameFromResponse(AbstractResponse resp) {
+        game.setGameToken(((List<String>)resp.getResult()).get(0));
+        game.setPlayerToken(((List<String>)resp.getResult()).get(1));
     }
 
 }
